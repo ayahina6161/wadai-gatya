@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>話題ガチャ</title>
+  <style>
+    body {
+      background: #e0f7fa;
+      color: #333;
+      font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #00796b;
+    }
+
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 12px;
+      background: #b2dfdb;
+      color: #333;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #80cbc4;
+    }
+
+    .auto-active {
+      background: #aed581 !important;
+    }
+
+    .auto-stop {
+      background: #ef9a9a !important;
+    }
+
+    #topic {
+      font-size: 24px;
+      background: #ffffffaa;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 30px auto;
+      max-width: 600px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #categoryButtons button {
+      background: #f8bbd0;
+    }
+
+    #categoryButtons button:hover {
+      background: #f48fb1;
+    }
+
+    #history {
+      text-align: left;
+      margin-top: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #history h2 {
+      font-size: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #history ul {
+      list-style: none;
+      padding: 0;
+      font-size: 16px;
+    }
+
+    #history li::before {
+      content: "・";
+      margin-right: 4px;
+    }
+  </style>
+  <script defer>
+    const rawTopics = {
+     "雑談": [
+        "子どもの頃の夢は？",
+        "好きな食べ物・嫌いな食べ物は？",
+        "今年やりたいことは？",
+        "好きな音楽のジャンルは？",
+        "ペットを飼っている？いたらどんな子？",
+        "好きな場所・行ってみたい場所は？",
+        "最近のマイブームは？",
+        "小さい頃の思い出で一番楽しかったことは？",
+        "一番好きな季節は？その理由は？",
+        "最近食べた美味しいものは？",
+        "好きな色は？その理由も教えて！",
+        "自分の性格を一言で表すと？",
+        "得意な料理は？",
+        "最近笑ったことは？",
+        "学生時代の部活やクラブ活動は？",
+        "一番怖かった体験は？",
+        "子どもの頃のあだ名は？",
+        "好きな動物は？理由も教えて！",
+        "自分の長所と短所は？",
+        "好きな言葉や座右の銘は？",
+        "いつかやってみたいことは？",
+        "学生時代の思い出話を教えて！",
+        "学生時代の苦い思い出は？",
+        "もし宝くじが当たったら何に使う？",
+        "子どもの頃の好きな遊びは？",
+        "好きな飲み物は？（お酒も含む）",
+        "最近見た夢で覚えているものは？",
+        "もし一日だけ有名人になれたら何をする？",
+        "最近欲しいものは？",
+        "好きな曲やアーティストは？",
+        "一番落ち着く場所はどこ？",
+        "好きなキャラクターの名セリフは？",
+        "自分の部屋のこだわりは？",
+        "自分のモットーは？",
+        "子どもの頃の好きなお菓子は？",
+        "もしタイムマシンがあったら過去と未来どっちに行きたい？",
+        "自分が「幽霊」になるとしたらどこに現れたい？",
+        "人生で一番びっくりした出来事は？",
+        "これまでで一番印象に残ったプレゼントは？",
+        "好きな漫画・アニメの「必殺技」を考えてみて！",
+        "ペットを飼うなら何がいい？",
+        "これまでで一番感動した音楽は？",
+        "子どもの頃に憧れていた職業は？",
+        "最近の「おもしろ失敗談」は？",
+        "自分の一番のチャームポイントは？",
+        "もしも一週間スマホが使えなかったらどうする？",
+        "一番好きな季節のイベントは？",
+        "最近感動した話やニュースは？",
+        "子どもの頃に怖かったものは？",
+        "好きなカラオケの定番曲は？"
+      ],
+      "深い話": [
+        "あなたが生きる上で一番大切にしている価値観は？",
+        "今までの人生で一番後悔していることは？",
+        "幸せってなんだと思う？",
+        "「やり直せるなら」いつに戻りたい？",
+        "大人になるってどういうことだと思う？",
+        "今の自分を子どもの自分が見たら、どう思う？",
+        "自分の人生を物語にしたら、タイトルは何？",
+        "一番「生きててよかった」と感じた瞬間は？",
+        "他人に理解されにくい、自分の信念ってある？",
+        "いつか叶えたい「夢」ってある？",
+        "自分にとって「自由」とは？",
+        "もしあと1年で死ぬとしたら、何をする？",
+        "過去の失敗から学んだ、一番大事なことは？",
+        "「普通」って何だと思う？",
+        "自分の弱さを受け入れるってどういうこと？",
+        "どんなときに「自分らしさ」を感じる？",
+        "人生において「無駄」だったことはある？",
+        "いちばん「変われた」と思えた経験は？",
+        "一番影響を受けた言葉は？",
+        "「今の自分を変えたい」と思うことはある？",
+        "親友と呼べる人は何人いる？",
+        "信じていた人に裏切られた経験ある？",
+        "信頼ってどう築いていくものだと思う？",
+        "一番仲良くなるまでに時間がかかった人は？",
+        "「人を許す」ってどういうこと？",
+        "関係を断った方がよかった人っていた？",
+        "どんなときに人との距離を感じる？",
+        "本当の優しさって何だと思う？",
+        "自分が人に与えているものは何？",
+        "人とのつながりに疲れたとき、どうする？",
+        "過去に縁が切れてしまって、今も後悔してる人は？",
+        "誰かの人生を変えたことがあると思う？",
+        "あなたにとって「一緒にいて楽な人」とは？",
+        "他人の期待に応えようとしすぎてしまう？",
+        "「自分の居場所」を感じたことある？",
+        "友情と恋愛の違いって何？",
+        "嫌いな人にどう接する？",
+        "誰かを本気で守りたいと思ったことある？",
+        "自分にとって「家族」ってどういう存在？",
+        "心から感謝してる人は誰？",
+        "死んだ後に残したいものは何？",
+        "人は何のために生きていると思う？",
+        "「本当の自分」とはなんだと思う？",
+        "今の世界をどう変えたい？",
+        "永遠に生きられるとしたら、どうする？",
+        "運命って信じてる？",
+        "他人に理解されなくても守りたい信念ある？",
+        "過去・現在・未来のうち、一番大事なのは？",
+        "「正しさ」と「やさしさ」、どちらを選ぶ？",
+        "あなたにとって「生きてる実感」とは？"
+      ],
+      "恋愛": [
+        "初恋はいつ？",
+        "今までで一番印象に残ってる恋ってどんなの？",
+        "告白する派？されたい派？",
+        "恋愛対象の年齢差ってどこまでOK？",
+        "恋人ができたら毎日連絡したい？",
+        "遠距離恋愛ってできる？",
+        "恋人に求める「絶対条件」は？",
+        "恋が冷める瞬間ってどんなとき？",
+        "付き合う前にどこまで知っておきたい？",
+        "モテる人と一途な人、どっちがタイプ？",
+        "理想の告白シチュエーションは？",
+        "理想のデートプランを語って！",
+        "好きな人と行ってみたい場所は？",
+        "理想のプロポーズ、されたい？したい？",
+        "恋人にされたらキュンとする仕草は？",
+        "付き合うなら芸能人で誰？",
+        "恋人とペアルック、あり？なし？",
+        "どんな甘え方が理想？",
+        "恋人にサプライズするなら何する？",
+        "おうちデート派？お出かけ派？",
+        "「好き」と「尊敬」、どっちが大事？",
+        "恋愛と友情、両立できる？",
+        "恋人がオタク趣味だったらどうする？",
+        "恋人が元カノ・元カレと友達なのはアリ？",
+        "デート代は割り勘？出す？出してほしい？",
+        "連絡頻度が合わないとき、どうする？",
+        "一目惚れって信じる？",
+        "恋人に嘘つくのって、どこまで許せる？",
+        "SNSでの「匂わせ」ってどう思う？",
+        "恋人と価値観が合わないと感じたら？",
+        "黒歴史級の恋愛エピソードは？",
+        "付き合ってすぐ別れた理由ってある？",
+        "修羅場エピソードあればどうぞ…",
+        "デートでやらかした話ある？",
+        "好きな人にやっちまった失敗は？",
+        "恋愛で「え？それアリ？」と思った瞬間",
+        "片思い中にしてしまった恥ずかしい行動",
+        "元カレ・元カノとの変な思い出",
+        "初デートで言われて困ったセリフ",
+        "告白して後悔したエピソード",
+        "本当に好きだった人を諦めた理由は？",
+        "恋愛で自分が一番傷ついた瞬間は？",
+        "誰にも言えなかった恋の経験はある？",
+        "恋人に裏切られた経験がある？ どう乗り越えた？",
+        "好きな人の幸せを願って身を引いたことある？",
+        "一度は手放したけど、忘れられなかった恋は？",
+        "恋愛依存になってしまったことはある？",
+        "恋人との価値観のズレで苦しんだ経験は？",
+        "「この人と一緒にいちゃいけない」と思った理由は？",
+        "今の自分の恋愛観は、どんな過去から作られた？"
+      ],
+      "おもしろ": [
+        "一日だけ透明人間になれるとしたら何する？",
+        "もしも一日だけ全ての動物と話せるなら、誰に何を聞く？",
+        "自分が100歳まで生きるとしたら、どんなおじいちゃん・おばあちゃんになる？",
+        "明日からバナナしか食べられない世界になったら？",
+        "あなたの人生が映画化されたら、タイトルは？",
+        "空を飛べるようになったら、まずどこ行く？",
+        "タイムスリップできるなら、どの時代？何をする？",
+        "もしも全人類の言語が関西弁になったら？",
+        "自分の人生、RPGにしたらどんな職業？",
+        "身の回りのもの1つがしゃべるようになったら？",
+        "ゾンビがやってきたら、あなたの作戦は？",
+        "突然アイドルとしてスカウトされたら？",
+        "自分の名前に「様」がつく世界ってどんな感じ？",
+        "異世界転生したらまず言いそうなセリフは？",
+        "身体の一部が機械になるならどこ？",
+        "地球最後の日、何食べる？",
+        "「3行で自己紹介」してみて",
+        "「初恋」をホラー風に語ってください",
+        "「マジでどうでもいい特技」ありますか？",
+        "声に出して読みたい「意味不明な文章」を作って",
+        "「バカバカしいけど真剣」な提案してください",
+        "自作の都市伝説、何かある？",
+        "「意味のない発明品」考えてプレゼンしてみて",
+        "「無敵になったくしゃみ」ってどんなの？",
+        "VTuberに転生できたら何キャラになる？",
+        "SNSの中で一番「命を燃やしてる」アプリは？",
+        "「二次元と結婚できる法律」できたらどうする？",
+        "深夜テンションでやりがちなことは？",
+        "オタクが世界を救うアニメ、どう始まる？",
+        "異世界に転生したら、どんな能力が欲しい？",
+        "朝起きたら性別が変わっていたら、何をする？",
+        "推しと同じ家に住むことになったら？",
+        "人間以外に転生するとしたら、何になる？",
+        "一生ひとつの食べ物しか食べられなくなったら？",
+        "自分の人生がアニメだったら、どんなジャンル？",
+        "無人島に1つだけ持っていけるとしたら？",
+        "一日だけ時間を止められるとしたら、何をする？",
+        "魔法が1つだけ使えるとしたら、何にする？",
+        "架空の職業を作るなら、どんな仕事？",
+        "ずっと夜の世界に住むとしたら？",
+        "「もしも自分が物語のラスボスだったら」どんな設定？",
+        "理想の秘密基地をつくるなら、どんな設備にする？",
+        "世界で一番くだらない争いって何だと思う？",
+        "あなたの「やたらカッコつけてやってる日常動作」ありますか？",
+        "未来の自分からメッセージが届いたら、何を聞きたい？",
+        "世界中どこでも住めるとしたら、どこに住みたい？",
+        "自分が映画の主人公になったら、どんな物語？",
+        "未来で自分が超有名人になったら、どんなエピソードを語る？",
+      ]
+    };
+
+    const topics = { ...rawTopics };
+    topics["すべてのジャンル"] = Object.values(rawTopics).flat();
+
+    let currentCategory = null;
+    let autoInterval = null;
+    let history = [];
+
+    function createCategoryButtons() {
+      const container = document.getElementById("categoryButtons");
+      container.innerHTML = "";
+      Object.keys(topics).forEach((category) => {
+        const button = document.createElement("button");
+        button.textContent = category;
+        button.addEventListener("click", () => {
+          selectCategory(category);
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function selectCategory(category) {
+      currentCategory = category;
+      history = [];
+      document.getElementById("topic").textContent = "ジャンル「" + category + "」が選ばれました。";
+      clearInterval(autoInterval);
+      autoInterval = null;
+      updateButtonsState();
+      updateHistory();
+    }
+
+    function updateButtonsState() {
+      const buttons = document.querySelectorAll("#categoryButtons button");
+      buttons.forEach((btn) => {
+        if (btn.textContent === currentCategory) {
+          btn.classList.add("auto-active");
+        } else {
+          btn.classList.remove("auto-active");
+        }
+      });
+
+      const autoBtn = document.getElementById("autoBtn");
+      if (autoInterval) {
+        autoBtn.textContent = "自動停止";
+        autoBtn.classList.add("auto-stop");
+      } else {
+        autoBtn.textContent = "自動スタート";
+        autoBtn.classList.remove("auto-stop");
+      }
+    }
+
+    function getRandomTopic() {
+      if (!currentCategory) return "";
+      const list = topics[currentCategory];
+      if (!list || list.length === 0) return "トピックがありません。";
+      const index = Math.floor(Math.random() * list.length);
+      return list[index];
+    }
+
+    function showRandomTopic() {
+      const topicText = getRandomTopic();
+      document.getElementById("topic").textContent = topicText;
+      if (topicText && topicText !== "トピックがありません。") {
+        history.unshift(topicText);
+        if (history.length > 20) history.pop();
+        updateHistory();
+      }
+    }
+
+    function toggleAuto() {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+      } else {
+        if (!currentCategory) {
+          alert("まずジャンルを選んでください。");
+          return;
+        }
+        showRandomTopic();
+        autoInterval = setInterval(showRandomTopic, 300000);
+      }
+      updateButtonsState();
+    }
+
+    function updateHistory() {
+      const historyList = document.getElementById("historyList");
+      historyList.innerHTML = "";
+      history.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        historyList.appendChild(li);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      createCategoryButtons();
+
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        if (!currentCategory) {
+          alert("まずジャンルを選んでください。");
+          return;
+        }
+        showRandomTopic();
+      });
+
+      document.getElementById("autoBtn").addEventListener("click", () => {
+        toggleAuto();
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>話題ガチャ</h1>
+
+<div id="description" style="
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffffcc;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.6;
+">
+  <p><strong>「話題ガチャ」</strong>は、配信や雑談で使えるトークテーマをランダムで表示するWebツールです。</p>
+  <p>各ジャンルに約50個ずつの話題を収録しています。<br>
+  <strong>「すべてのジャンル」</strong>では、<em>雑談・深い話・恋愛・おもしろ</em>の全ジャンルからランダムに出題されます。</p>
+
+  <ul>
+    <li><strong>雑談</strong>：誰でも気軽に答えられる日常的な話題<br><em>（例：子どもの頃の夢は？ ペットを飼っている？）</em></li>
+    <li><strong>深い話</strong>：価値観や人生観を語れるちょっと深いテーマ<br><em>（例：あなたの大切にしている価値観は？ 一番「生きててよかった」と思った瞬間は？）</em></li>
+    <li><strong>恋愛</strong>：恋の思い出や恋愛観について話せるテーマ<br><em>（例：初恋はいつ？ 好きな人の幸せを願って身を引いたことある？）</em></li>
+    <li><strong>おもしろ</strong>：妄想やユニークな話題<br><em>（例：タイムスリップできたら？ 地球最後の日に食べたいものは？）</em></li>
+  </ul>
+
+  <p><strong>「自動スタート」</strong>を押すと、5分ごとに自動で新しい話題が表示され続けます。</p>
+</div>
+
+  <div id="categoryButtons"></div>
+
+  <div>
+    <button id="nextBtn">次の話題</button>
+    <button id="autoBtn">自動スタート</button>
+  </div>
+
+  <div id="topic">ジャンルを選んでください。</div>
+
+  <div id="history">
+    <h2>履歴</h2>
+    <ul id="historyList"></ul>
+  </div>
+</body>
+</html>
