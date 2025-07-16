@@ -93,6 +93,10 @@
     }
   </style>
   <script defer>
+
+let countdown = 0;
+let countdownTimer = null;
+
     const rawTopics = {
      "雑談": [
         "子どもの頃の夢は？",
@@ -370,21 +374,26 @@
       }
     }
 
-    function toggleAuto() {
-      if (autoInterval) {
-        clearInterval(autoInterval);
-        autoInterval = null;
-      } else {
-        if (!currentCategory) {
-          alert("まずジャンルを選んでください。");
-          return;
-        }
-        showRandomTopic();
-        autoInterval = setInterval(showRandomTopic, 300000);
-      }
-      updateButtonsState();
+function toggleAuto() {
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = null;
+    clearInterval(countdownTimer);
+    document.getElementById("timer").textContent = "";
+  } else {
+    if (!currentCategory) {
+      alert("まずジャンルを選んでください。");
+      return;
     }
-
+    showRandomTopic();
+    startCountdown(300); // この数値を変えるとカウントダウンの秒数が変わる
+    autoInterval = setInterval(() => {
+      showRandomTopic();
+      startCountdown(300);
+    }, 300000);
+  }
+  updateButtonsState();
+}
     function updateHistory() {
       const historyList = document.getElementById("historyList");
       historyList.innerHTML = "";
@@ -410,6 +419,27 @@
         toggleAuto();
       });
     });
+
+function startCountdown(seconds) {
+  countdown = seconds;
+  updateTimerDisplay();
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    countdown--;
+    updateTimerDisplay();
+    if (countdown <= 0) {
+      clearInterval(countdownTimer);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const timerDisplay = document.getElementById("timer");
+  const min = String(Math.floor(countdown / 60)).padStart(2, '0');
+  const sec = String(countdown % 60).padStart(2, '0');
+  timerDisplay.textContent = `自動表示まで：${min}:${sec}`;
+}
+
   </script>
 </head>
 <body>
@@ -448,6 +478,16 @@
   </div>
 
   <div id="topic">ジャンルを選んでください。</div>
+
+<div id="timer" style="
+  margin: 10px auto;
+  font-size: 16px;
+  color: #00796b;
+  font-weight: bold;
+">
+  自動表示まで：00:00
+</div>
+
 
   <div id="history">
     <h2>履歴</h2>
